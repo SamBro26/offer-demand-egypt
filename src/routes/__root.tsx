@@ -126,6 +126,11 @@ function RootComponent() {
       router.invalidate();
       queryClient.invalidateQueries({ queryKey: ["session"] });
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      const next = event === "SIGNED_IN" ? sessionStorage.getItem("aqarak:auth-next") : null;
+      if (next) {
+        sessionStorage.removeItem("aqarak:auth-next");
+        router.navigate({ to: next });
+      }
     });
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
