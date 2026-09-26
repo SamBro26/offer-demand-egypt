@@ -1,6 +1,15 @@
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
 import apartmentImage from "@/assets/apartment.jpg";
 import villaImage from "@/assets/villa.jpg";
-import { listingPriceLabel, propertyTypeLabels, type Listing } from "@/lib/listings";
+import {
+  listingPriceLabel,
+  photoUrlsQuery,
+  propertyTypeLabels,
+  transactionTypeLabels,
+  type Listing,
+} from "@/lib/listings";
 
 /** Preview imagery per property type until owners upload their own photos. */
 const imageByType: Record<string, string> = {
@@ -8,13 +17,23 @@ const imageByType: Record<string, string> = {
   chalet: villaImage,
 };
 
+export function fallbackImage(propertyType: string) {
+  return imageByType[propertyType] ?? apartmentImage;
+}
+
 export function ListingCard({ listing }: { listing: Listing }) {
-  const image = imageByType[listing.property_type] ?? apartmentImage;
+  const firstPhoto = listing.images.slice(0, 1);
+  const { data: urls = [] } = useQuery(photoUrlsQuery(firstPhoto));
+  const image = urls[0] ?? fallbackImage(listing.property_type);
   const area = listing.districts?.name_ar ?? listing.district_label ?? "";
   const governorate = listing.governorates?.name_ar ?? "";
 
   return (
-    <article className="flex gap-3 rounded-3xl glass-panel p-3">
+    <Link
+      to="/listings/$id"
+      params={{ id: listing.id }}
+      className="flex gap-3 rounded-3xl glass-panel p-3 transition-transform active:scale-[0.99]"
+    >
       <img
         src={image}
         alt={listing.title}
@@ -27,6 +46,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <div className="flex min-w-0 items-center gap-1.5">
           <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-bold text-brand">
             {propertyTypeLabels[listing.property_type] ?? listing.property_type}
+          </span>
+          <span className="shrink-0 rounded-full bg-mist px-2 py-0.5 text-[10px] font-bold text-ink-soft">
+            {transactionTypeLabels[listing.transaction_type]}
           </span>
           <span className="truncate text-[10px] font-medium text-ink-faint">
             {area}
@@ -48,6 +70,6 @@ export function ListingCard({ listing }: { listing: Listing }) {
           {listingPriceLabel(listing)}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
