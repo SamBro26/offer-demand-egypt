@@ -76,6 +76,61 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_likes: {
+        Row: {
+          created_at: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_likes_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_ratings: {
+        Row: {
+          created_at: string
+          listing_id: string
+          stars: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          stars: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          stars?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_ratings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           area_sqm: number | null
@@ -90,13 +145,16 @@ export type Database = {
           governorate_id: string
           id: string
           image_url: string | null
+          images: string[]
           kind: Database["public"]["Enums"]["listing_kind"]
           owner_id: string | null
+          phone: string | null
           posted_as: Database["public"]["Enums"]["account_type"]
           price: number | null
           property_type: Database["public"]["Enums"]["property_type"]
           status: Database["public"]["Enums"]["listing_status"]
           title: string
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
           updated_at: string
         }
         Insert: {
@@ -112,13 +170,16 @@ export type Database = {
           governorate_id: string
           id?: string
           image_url?: string | null
+          images?: string[]
           kind: Database["public"]["Enums"]["listing_kind"]
           owner_id?: string | null
+          phone?: string | null
           posted_as?: Database["public"]["Enums"]["account_type"]
           price?: number | null
           property_type?: Database["public"]["Enums"]["property_type"]
           status?: Database["public"]["Enums"]["listing_status"]
           title: string
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
           updated_at?: string
         }
         Update: {
@@ -134,13 +195,16 @@ export type Database = {
           governorate_id?: string
           id?: string
           image_url?: string | null
+          images?: string[]
           kind?: Database["public"]["Enums"]["listing_kind"]
           owner_id?: string | null
+          phone?: string | null
           posted_as?: Database["public"]["Enums"]["account_type"]
           price?: number | null
           property_type?: Database["public"]["Enums"]["property_type"]
           status?: Database["public"]["Enums"]["listing_status"]
           title?: string
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
           updated_at?: string
         }
         Relationships: [
@@ -156,6 +220,41 @@ export type Database = {
             columns: ["governorate_id"]
             isOneToOne: false
             referencedRelation: "governorates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          listing_id: string
+          recipient_id: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          recipient_id?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          recipient_id?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
             referencedColumns: ["id"]
           },
         ]
@@ -235,6 +334,9 @@ export type Database = {
         | "shop"
         | "office"
         | "chalet"
+        | "building_land"
+        | "agricultural_land"
+      transaction_type: "sale" | "rent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -375,7 +477,10 @@ export const Constants = {
         "shop",
         "office",
         "chalet",
+        "building_land",
+        "agricultural_land",
       ],
+      transaction_type: ["sale", "rent"],
     },
   },
 } as const
