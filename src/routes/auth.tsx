@@ -42,7 +42,7 @@ function AuthPage() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     const parsed = schema.safeParse({ email, password });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message);
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
     setBusy(true);
     const { error } =
       mode === "signin"
@@ -52,20 +52,22 @@ function AuthPage() {
             options: { emailRedirectTo: window.location.origin },
           });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (mode === "signup") {
       toast.success("تم إنشاء الحساب. راجع بريدك لتأكيد الحساب ثم سجّل الدخول.");
       setMode("signin");
       return;
     }
     goNext();
+    return;
   };
 
   const google = async () => {
     if (next) sessionStorage.setItem("aqarak:auth-next", next);
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) return toast.error("تعذّر تسجيل الدخول عبر Google");
+    if (result.error) { toast.error("تعذّر تسجيل الدخول عبر Google"); return; }
     if (!result.redirected) goNext();
+    return;
   };
 
   const input =

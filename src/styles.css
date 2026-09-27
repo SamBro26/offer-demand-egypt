@@ -52,6 +52,9 @@
   /* Brand palette (Frosted Glass) */
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
+  --color-star: var(--star);
+  --color-like: var(--like);
+  --color-whatsapp: var(--whatsapp);
   --color-sky-accent: var(--sky-accent);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
@@ -71,6 +74,9 @@
 
   --brand: oklch(0.546 0.215 263);
   --brand-deep: oklch(0.379 0.146 265);
+  --star: oklch(0.8 0.16 80);
+  --like: oklch(0.6 0.22 20);
+  --whatsapp: oklch(0.62 0.17 150);
   --sky-accent: oklch(0.685 0.169 237);
   --ink: oklch(0.208 0.042 265.8);
   --ink-soft: oklch(0.554 0.046 257.4);
