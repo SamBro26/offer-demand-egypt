@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Listing photos live in the private `listing-photos` bucket under `<user_id>/`; `listings.images` stores paths resolved via signed URLs — public buckets are blocked on this project.
