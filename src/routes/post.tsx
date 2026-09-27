@@ -93,8 +93,8 @@ function PostPage() {
   const submit = async () => {
     if (!user || !propertyType || !transaction || !isLocationComplete(location)) return;
     const parsed = detailsSchema.safeParse({ price: price ? Number(price) : null, description, phone });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message);
-    if (photosRequired && photos.length === 0) return toast.error("أضِف صورة واحدة على الأقل للعقار المعروض");
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
+    if (photosRequired && photos.length === 0) { toast.error("أضِف صورة واحدة على الأقل للعقار المعروض"); return; }
 
     setBusy(true);
     try {
