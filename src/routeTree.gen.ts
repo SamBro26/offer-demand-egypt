@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as PostRouteImport } from './routes/post'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 
@@ -30,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostRoute = PostRouteImport.update({
   id: '/post',
   path: '/post',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/inbox': typeof InboxRoute
   '/post': typeof PostRoute
   '/listings/$id': typeof ListingsIdRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/inbox': typeof InboxRoute
   '/post': typeof PostRoute
   '/listings/$id': typeof ListingsIdRoute
 }
@@ -60,21 +68,30 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/inbox': typeof InboxRoute
   '/post': typeof PostRoute
   '/listings/$id': typeof ListingsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/auth' | '/post' | '/listings/$id'
+  fullPaths: '/' | '/account' | '/auth' | '/inbox' | '/post' | '/listings/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/auth' | '/post' | '/listings/$id'
-  id: '__root__' | '/' | '/account' | '/auth' | '/post' | '/listings/$id'
+  to: '/' | '/account' | '/auth' | '/inbox' | '/post' | '/listings/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/inbox'
+    | '/post'
+    | '/listings/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
+  InboxRoute: typeof InboxRoute
   PostRoute: typeof PostRoute
   ListingsIdRoute: typeof ListingsIdRoute
 }
@@ -102,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/post': {
       id: '/post'
       path: '/post'
@@ -123,6 +147,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
+  InboxRoute: InboxRoute,
   PostRoute: PostRoute,
   ListingsIdRoute: ListingsIdRoute,
 }
