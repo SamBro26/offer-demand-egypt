@@ -230,6 +230,7 @@ export type Database = {
           created_at: string
           id: string
           listing_id: string
+          read_at: string | null
           recipient_id: string | null
           sender_id: string
         }
@@ -238,6 +239,7 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id: string
+          read_at?: string | null
           recipient_id?: string | null
           sender_id: string
         }
@@ -246,6 +248,7 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string
+          read_at?: string | null
           recipient_id?: string | null
           sender_id?: string
         }
