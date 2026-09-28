@@ -17,7 +17,8 @@ export function ChatSheet({ listing, onClose }: { listing: Listing; onClose: () 
   const { user, loading } = useSession();
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
-  const { data: messages = [] } = useQuery(messagesQuery(listing.id, Boolean(user)));
+  const recipientId = listing.owner_id === user?.id ? null : listing.owner_id;
+  const { data: messages = [] } = useQuery(messagesQuery(listing.id, user?.id ?? null, recipientId));
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -26,11 +27,11 @@ export function ChatSheet({ listing, onClose }: { listing: Listing; onClose: () 
   const send = useMutation({
     mutationFn: async () => {
       const body = bodySchema.parse(text);
-      if (!user) return;
+      if (!user || !recipientId) return;
       const { error } = await supabase.from("messages").insert({
         listing_id: listing.id,
         sender_id: user.id,
-        recipient_id: listing.owner_id,
+        recipient_id: recipientId,
         body,
       });
       if (error) throw error;
@@ -69,6 +70,13 @@ export function ChatSheet({ listing, onClose }: { listing: Listing; onClose: () 
               className="rounded-xl bg-brand px-6 py-3 text-[13px] font-bold text-primary-foreground"
             >
               تسجيل الدخول
+            </Link>
+          </div>
+        ) : !recipientId ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
+            <p className="text-[13px] text-ink-soft">محادثات هذا الإعلان موجودة في صندوق الوارد.</p>
+            <Link to="/inbox" className="rounded-xl bg-brand px-6 py-3 text-[13px] font-bold text-primary-foreground">
+              فتح صندوق الوارد
             </Link>
           </div>
         ) : (

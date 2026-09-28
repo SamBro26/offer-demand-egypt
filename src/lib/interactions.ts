@@ -30,18 +30,25 @@ export const likesQuery = (listingId: string) =>
 
 export type ChatMessage = { id: string; sender_id: string; body: string; created_at: string };
 
-export const messagesQuery = (listingId: string, enabled: boolean) =>
+export const messagesQuery = (listingId: string, userId: string | null, counterpartyId: string | null = null) =>
   queryOptions({
-    queryKey: ["messages", listingId],
+    queryKey: ["messages", listingId, counterpartyId],
     queryFn: async (): Promise<ChatMessage[]> => {
-      const { data, error } = await supabase
+      if (!userId) return [];
+      let query = supabase
         .from("messages")
         .select("id, sender_id, body, created_at")
         .eq("listing_id", listingId)
         .order("created_at");
+      if (counterpartyId) {
+        query = query.or(
+          `and(sender_id.eq.${userId},recipient_id.eq.${counterpartyId}),and(sender_id.eq.${counterpartyId},recipient_id.eq.${userId})`,
+        );
+      }
+      const { data, error } = await query;
       if (error) throw error;
       return data ?? [];
     },
-    enabled,
-    refetchInterval: enabled ? 4000 : false,
+    enabled: Boolean(userId),
+    refetchInterval: userId ? 4000 : false,
   });
