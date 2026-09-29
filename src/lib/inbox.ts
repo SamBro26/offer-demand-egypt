@@ -61,10 +61,12 @@ export function groupConversations(messages: InboxMessage[], userId: string): Co
     grouped.set(key, [...(grouped.get(key) ?? []), message]);
   }
 
-  return Array.from(grouped, ([key, thread]) => {
+  const conversations: Conversation[] = [];
+  for (const [key, thread] of grouped) {
     const latest = thread[0];
+    if (!latest) continue;
     const counterpartyId = latest.sender_id === userId ? latest.recipient_id : latest.sender_id;
-    return {
+    conversations.push({
       key,
       listingId: latest.listing_id,
       listingTitle: latest.listings?.title ?? "إعلان غير متاح",
@@ -77,8 +79,9 @@ export function groupConversations(messages: InboxMessage[], userId: string): Co
       unreadCount: thread.filter(
         (message) => message.recipient_id === userId && message.read_at === null,
       ).length,
-    };
-  }).sort((a, b) => b.latest.created_at.localeCompare(a.latest.created_at));
+    });
+  }
+  return conversations.sort((a, b) => b.latest.created_at.localeCompare(a.latest.created_at));
 }
 
 export function unreadMessageCount(messages: InboxMessage[], userId: string | null) {

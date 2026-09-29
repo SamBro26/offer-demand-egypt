@@ -21,6 +21,8 @@ export const Route = createFileRoute("/inbox")({
       { name: "description", content: "تابع محادثات العقارات والردود الجديدة في صندوق وارد واحد." },
       { property: "og:title", content: "صندوق الوارد — عقارك بنفسك" },
       { property: "og:description", content: "كل محادثات العقارات والردود الجديدة في مكان واحد." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: InboxPage,

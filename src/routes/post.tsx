@@ -36,6 +36,8 @@ export const Route = createFileRoute("/post")({
       { name: "description", content: "انشر عقارك المعروض أو طلب البحث مجانًا في خطوات بسيطة." },
       { property: "og:title", content: "أضِف إعلانك — عقارك بنفسك" },
       { property: "og:description", content: "خطوات بسيطة لنشر عقار معروض أو طلب بحث في أي محافظة مصرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: PostPage,

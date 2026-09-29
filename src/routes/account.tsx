@@ -16,6 +16,8 @@ export const Route = createFileRoute("/account")({
       },
       { property: "og:title", content: "حسابي — عقارك بنفسك" },
       { property: "og:description", content: "إدارة نوع الحساب والإعلانات على عقارك بنفسك." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AccountPage,
@@ -37,7 +39,7 @@ function AccountPage() {
             أنت تتصفح الآن كـ <span className="font-bold text-brand">{accountTypeLabels[accountType]}</span>.
           </p>
           <p className="mt-3 text-[12px] leading-relaxed text-ink-soft">
-            تسجيل الدخول وإدارة الإعلانات والمحادثات تأتي في المرحلة القادمة.
+            يمكنك الآن نشر الإعلانات ومتابعة محادثاتك من صندوق الوارد.
           </p>
         </section>
       </div>
