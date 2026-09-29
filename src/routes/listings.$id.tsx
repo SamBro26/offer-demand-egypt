@@ -22,6 +22,8 @@ export const Route = createFileRoute("/listings/$id")({
       { name: "description", content: "صور وتفاصيل العقار مع التواصل المجاني عبر الرسائل والاتصال وواتساب." },
       { property: "og:title", content: "تفاصيل العقار — عقارك بنفسك" },
       { property: "og:description", content: "تواصل مجانًا مع المعلن مباشرة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ListingPage,

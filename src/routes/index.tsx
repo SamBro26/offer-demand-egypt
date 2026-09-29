@@ -27,6 +27,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "سوق موحّد للعرض والطلب في 27 محافظة مصرية، من المالك مباشرة.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
