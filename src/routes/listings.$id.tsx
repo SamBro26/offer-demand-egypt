@@ -6,6 +6,7 @@ import { AmbientBackground } from "@/components/layout/AmbientBackground";
 import { AdBanner } from "@/components/advertising/AdBanner";
 import { ContactBar } from "@/components/listing/ContactBar";
 import { LikeButton, StarRating } from "@/components/listing/Interactions";
+import { ModerationControls } from "@/components/listing/ModerationControls";
 import { fallbackImage } from "@/components/market/ListingCard";
 import {
   listingPriceLabel,
@@ -80,6 +81,7 @@ function ListingPage() {
           <StarRating listingId={listing.id} />
           <LikeButton listingId={listing.id} />
         </div>
+         <ModerationControls listingId={listing.id} ownerId={listing.owner_id} />
       </section>
 
       <section className="mt-4 rounded-3xl glass-panel p-4">
