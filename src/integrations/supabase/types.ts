@@ -131,6 +131,44 @@ export type Database = {
           },
         ]
       }
+      listing_reports: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["listing_report_status"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["listing_report_status"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["listing_report_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_reports_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           area_sqm: number | null
@@ -292,6 +330,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_bans: {
+        Row: {
+          banned_by: string
+          created_at: string
+          id: string
+          lifted_at: string | null
+          lifted_by: string | null
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          banned_by: string
+          created_at?: string
+          id?: string
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string
+          user_id: string
+        }
+        Update: {
+          banned_by?: string
+          created_at?: string
+          id?: string
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -326,11 +394,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_banned: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       account_type: "individual" | "agency"
       app_role: "individual" | "agency" | "admin"
       listing_kind: "offer" | "request"
+      listing_report_status: "pending" | "reviewed" | "actioned" | "dismissed"
       listing_status: "draft" | "published" | "archived"
       property_type:
         | "apartment"
@@ -474,6 +544,7 @@ export const Constants = {
       account_type: ["individual", "agency"],
       app_role: ["individual", "agency", "admin"],
       listing_kind: ["offer", "request"],
+      listing_report_status: ["pending", "reviewed", "actioned", "dismissed"],
       listing_status: ["draft", "published", "archived"],
       property_type: [
         "apartment",

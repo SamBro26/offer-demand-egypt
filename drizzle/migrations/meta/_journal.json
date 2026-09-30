@@ -29,6 +29,13 @@
       "when": 1790670095279,
       "tag": "0003_secure_message_reply_check",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790784116663,
+      "tag": "0004_add_secure_listing_moderation",
+      "breakpoints": true
     }
   ]
 }
