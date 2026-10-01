@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Flag, ShieldCheck } from "lucide-react";
 
 import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
@@ -76,7 +76,6 @@ function AdminPage() {
 }
 
 function ReportRow({ report }: { report: AdminReport }) {
-  const queryClient = useQueryClient();
   const listing = Array.isArray(report.listings) ? report.listings[0] : report.listings;
   const { data: urls = [] } = useQuery(photoUrlsQuery(listing?.images.slice(0, 1) ?? []));
   if (!listing) return null;
