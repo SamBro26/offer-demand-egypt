@@ -80,6 +80,8 @@ export const adminDeleteListing = createServerFn({ method: "POST" })
     if (readError) throw readError;
     if (!listing) return { deleted: false };
 
+    const { error: messagesError } = await supabaseAdmin.from("messages").delete().eq("listing_id", data.listingId);
+    if (messagesError) throw messagesError;
     const { error } = await supabaseAdmin.from("listings").delete().eq("id", data.listingId);
     if (error) throw error;
     if (listing.images.length > 0) {
@@ -108,16 +110,11 @@ export const adminBanListingOwner = createServerFn({ method: "POST" })
     });
     if (banError) throw banError;
 
-    const { error: logError } = await supabaseAdmin.from("user_bans").upsert(
-      {
-        user_id: listing.owner_id,
-        banned_by: context.userId,
-        reason: "مخالفة سياسات المنصة",
-        lifted_at: null,
-        lifted_by: null,
-      },
-      { onConflict: "user_id", ignoreDuplicates: true },
-    );
+    const { error: logError } = await supabaseAdmin.from("user_bans").insert({
+      user_id: listing.owner_id,
+      banned_by: context.userId,
+      reason: "مخالفة سياسات المنصة",
+    });
     if (logError && logError.code !== "23505") throw logError;
 
     const { error: archiveError } = await supabaseAdmin
