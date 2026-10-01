@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ban, Flag, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
 import { Button } from "@/components/ui/button";
 import { fallbackImage } from "@/components/market/ListingCard";
-import { adminReportsQuery } from "@/lib/moderation";
+import { adminReportsQuery, type AdminReport } from "@/lib/moderation";
 import {
   adminBanListingOwner,
   adminDeleteListing,
@@ -79,9 +79,8 @@ function AdminPage() {
   );
 }
 
-function ReportRow({ report }: { report: (typeof adminReportsQuery)["queryFn"] extends () => Promise<infer R> ? R[number] : never }) {
+function ReportRow({ report }: { report: AdminReport }) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const listing = Array.isArray(report.listings) ? report.listings[0] : report.listings;
   const { data: urls = [] } = useQuery(photoUrlsQuery(listing?.images.slice(0, 1) ?? []));
   const refresh = async () => {
