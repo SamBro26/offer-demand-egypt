@@ -1,17 +1,13 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Ban, Flag, ShieldCheck, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { Flag, ShieldCheck } from "lucide-react";
 
+import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
 import { Button } from "@/components/ui/button";
 import { fallbackImage } from "@/components/market/ListingCard";
 import { adminReportsQuery, type AdminReport } from "@/lib/moderation";
-import {
-  adminBanListingOwner,
-  adminDeleteListing,
-  getAdminStatus,
-} from "@/lib/moderation.functions";
+import { getAdminStatus } from "@/lib/moderation.functions";
 import { photoUrlsQuery, propertyTypeLabels } from "@/lib/listings";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -83,22 +79,6 @@ function ReportRow({ report }: { report: AdminReport }) {
   const queryClient = useQueryClient();
   const listing = Array.isArray(report.listings) ? report.listings[0] : report.listings;
   const { data: urls = [] } = useQuery(photoUrlsQuery(listing?.images.slice(0, 1) ?? []));
-  const refresh = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["admin-reports"] }),
-      queryClient.invalidateQueries({ queryKey: ["listings"] }),
-    ]);
-  };
-  const remove = useMutation({
-    mutationFn: () => adminDeleteListing({ data: { listingId: report.listing_id } }),
-    onSuccess: () => { toast.success("تم حذف الإعلان"); refresh(); },
-    onError: () => toast.error("تعذّر حذف الإعلان"),
-  });
-  const ban = useMutation({
-    mutationFn: () => adminBanListingOwner({ data: { listingId: report.listing_id } }),
-    onSuccess: () => { toast.success("تم حظر الحساب وأرشفة إعلاناته"); refresh(); },
-    onError: () => toast.error("تعذّر حظر الحساب"),
-  });
   if (!listing) return null;
   const image = urls[0] ?? fallbackImage(listing.property_type);
   const date = new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(report.created_at));
@@ -116,8 +96,7 @@ function ReportRow({ report }: { report: AdminReport }) {
         <p className="mt-1 text-[10px] text-ink-faint">{date}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm"><Link to="/listings/$id" params={{ id: listing.id }}>عرض</Link></Button>
-          <Button type="button" variant="destructive" size="sm" disabled={remove.isPending} onClick={() => remove.mutate()}><Trash2 /> حذف</Button>
-          <Button type="button" variant="outline" size="sm" disabled={!listing.owner_id || ban.isPending} onClick={() => ban.mutate()}><Ban /> حظر المستخدم</Button>
+          <AdminActionButtons listingId={report.listing_id} canBan={Boolean(listing.owner_id)} />
         </div>
       </div>
     </article>

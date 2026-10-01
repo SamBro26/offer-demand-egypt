@@ -80,6 +80,8 @@ export const adminDeleteListing = createServerFn({ method: "POST" })
     if (readError) throw readError;
     if (!listing) return { deleted: false };
 
+    const { error: messagesError } = await supabaseAdmin.from("messages").delete().eq("listing_id", data.listingId);
+    if (messagesError) throw messagesError;
     const { error } = await supabaseAdmin.from("listings").delete().eq("id", data.listingId);
     if (error) throw error;
     if (listing.images.length > 0) {
