@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { POST_LOGIN_MESSAGE } from "@/lib/use-post-gate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -85,6 +86,24 @@ function PostPage() {
   const [busy, setBusy] = useState(false);
 
   const photosRequired = kind === "offer";
+
+  // Direct visits while signed out: alert and send to sign-in before any step is filled.
+  useEffect(() => {
+    if (loading || user) return;
+    toast.error(POST_LOGIN_MESSAGE);
+    navigate({ to: "/auth", search: { next: "/post" }, replace: true });
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return (
+      <div className="relative min-h-screen">
+        <AmbientBackground />
+        <p className="relative mx-auto max-w-[430px] px-4 pt-10 text-center text-[13px] text-ink-soft">
+          {loading ? "جارٍ التحقق…" : POST_LOGIN_MESSAGE}
+        </p>
+      </div>
+    );
+  }
 
   const addPhotos = (files: FileList | null) => {
     const valid = Array.from(files ?? []).filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024);
