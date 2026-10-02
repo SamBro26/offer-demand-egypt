@@ -4,6 +4,7 @@ import { Home, MessageCircle, Plus, UserRound } from "lucide-react";
 
 import { useSession } from "@/lib/auth";
 import { inboxMessagesQuery, unreadMessageCount } from "@/lib/inbox";
+import { usePostGate } from "@/lib/use-post-gate";
 
 const itemClass =
   "flex flex-col items-center gap-1 rounded-2xl py-2.5 text-ink-soft transition-colors";
@@ -11,6 +12,7 @@ const activeClass = "bg-brand text-primary-foreground";
 
 export function BottomNav() {
   const { user } = useSession();
+  const gatePost = usePostGate();
   const { data: messages = [] } = useQuery(inboxMessagesQuery(user?.id ?? null));
   const unread = unreadMessageCount(messages, user?.id ?? null);
 
@@ -23,6 +25,7 @@ export function BottomNav() {
         </Link>
         <Link
           to="/post"
+          onClick={(e) => { if (!gatePost()) e.preventDefault(); }}
           className={itemClass}
           activeProps={{ className: `${itemClass} ${activeClass}` }}
         >

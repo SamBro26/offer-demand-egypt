@@ -12,6 +12,7 @@ import { LocationFilter } from "@/components/location/LocationFilter";
 import { listingsQuery, type ListingKind } from "@/lib/listings";
 import { emptyLocation, type LocationSelection } from "@/lib/locations";
 import { useAccountType } from "@/lib/use-account-type";
+import { usePostGate } from "@/lib/use-post-gate";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const navigate = useNavigate();
+  const gatePost = usePostGate();
   const [accountType, setAccountType] = useAccountType();
   const [kind, setKind] = useState<ListingKind>("offer");
   const [location, setLocation] = useState<LocationSelection>(emptyLocation);
@@ -74,7 +76,8 @@ function HomePage() {
             value={location}
             onChange={setLocation}
             actionLabel="التالي"
-            onAction={() =>
+            onAction={() => {
+              if (!gatePost()) return;
               navigate({
                 to: "/post",
                 search: {
@@ -82,8 +85,8 @@ function HomePage() {
                   district: location.districtId ?? undefined,
                   label: location.districtLabel || undefined,
                 },
-              })
-            }
+              });
+            }}
           />
         </div>
 
