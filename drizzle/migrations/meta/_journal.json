@@ -36,6 +36,13 @@
       "when": 1790784116663,
       "tag": "0004_add_secure_listing_moderation",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791055377425,
+      "tag": "0005_seed_all_egypt_districts",
+      "breakpoints": true
     }
   ]
 }
