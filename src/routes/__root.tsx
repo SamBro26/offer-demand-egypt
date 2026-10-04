@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { InboxNotifier } from "@/components/messaging/InboxNotifier";
+import { AdBanner } from "@/components/advertising/AdBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -139,8 +140,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AdBanner />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="pt-15"><Outlet /></div>
       <InboxNotifier />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>

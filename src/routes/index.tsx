@@ -3,7 +3,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
-import { AdBanner } from "@/components/advertising/AdBanner";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { ListingCard } from "@/components/market/ListingCard";
@@ -111,9 +110,6 @@ function HomePage() {
           )}
         </div>
 
-        <div className="mt-6">
-          <AdBanner />
-        </div>
       </div>
 
       <BottomNav />
