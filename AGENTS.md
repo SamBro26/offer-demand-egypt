@@ -12,3 +12,4 @@
 - Listing photos live in the private `listing-photos` bucket under `<user_id>/`; `listings.images` stores paths resolved via signed URLs — public buckets are blocked on this project.
 - Inbox conversations are derived from messages grouped by listing plus counterparty; this avoids duplicating conversation state while preserving per-listing threads.
 - Moderation actions use authenticated server functions that re-check `user_roles`; account bans are logged separately and enforced by restrictive RLS so stale sessions cannot write.
+- The advertisement placeholder is mounted once in the root layout with a matching content offset; this keeps it fixed on every page without duplicate placements or obscured content.

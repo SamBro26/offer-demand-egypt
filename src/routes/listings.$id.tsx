@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
-import { AdBanner } from "@/components/advertising/AdBanner";
 import { ContactBar } from "@/components/listing/ContactBar";
 import { LikeButton, StarRating } from "@/components/listing/Interactions";
 import { ModerationControls } from "@/components/listing/ModerationControls";
@@ -101,10 +100,6 @@ function ListingPage() {
           </>
         ) : null}
       </section>
-
-      <div className="mt-5">
-        <AdBanner />
-      </div>
 
       <ContactBar listing={listing} />
     </Shell>
