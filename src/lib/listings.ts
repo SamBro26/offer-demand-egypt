@@ -43,6 +43,7 @@ export type ListingFilters = {
   kind: ListingKind;
   governorateId: string | null;
   districtId: string | null;
+  districtLabel?: string;
 };
 
 export const listingsQuery = (filters: ListingFilters) =>
@@ -58,6 +59,9 @@ export const listingsQuery = (filters: ListingFilters) =>
 
       if (filters.governorateId) query = query.eq("governorate_id", filters.governorateId);
       if (filters.districtId) query = query.eq("district_id", filters.districtId);
+      else if (filters.governorateId && filters.districtLabel?.trim()) {
+        query = query.ilike("district_label", `%${filters.districtLabel.trim()}%`);
+      }
 
       const { data, error } = await query;
       if (error) throw error;

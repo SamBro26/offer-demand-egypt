@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
@@ -11,7 +11,6 @@ import { LocationFilter } from "@/components/location/LocationFilter";
 import { listingsQuery, type ListingKind } from "@/lib/listings";
 import { emptyLocation, type LocationSelection } from "@/lib/locations";
 import { useAccountType } from "@/lib/use-account-type";
-import { usePostGate } from "@/lib/use-post-gate";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,17 +34,16 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const navigate = useNavigate();
-  const gatePost = usePostGate();
   const [accountType, setAccountType] = useAccountType();
   const [kind, setKind] = useState<ListingKind>("offer");
   const [location, setLocation] = useState<LocationSelection>(emptyLocation);
 
-  const { data: listings = [], isPending } = useQuery(
+  const { data: listings = [], isPending, isError } = useQuery(
     listingsQuery({
       kind,
       governorateId: location.governorateId,
       districtId: location.districtId,
+      districtLabel: location.districtLabel,
     }),
   );
 
@@ -71,35 +69,24 @@ function HomePage() {
         </section>
 
         <div className="mt-4">
-          <LocationFilter
-            value={location}
-            onChange={setLocation}
-            actionLabel="التالي"
-            onAction={() => {
-              if (!gatePost()) return;
-              navigate({
-                to: "/post",
-                search: {
-                  gov: location.governorateId ?? undefined,
-                  district: location.districtId ?? undefined,
-                  label: location.districtLabel || undefined,
-                },
-              });
-            }}
-          />
+          <LocationFilter value={location} onChange={setLocation} title="فلترة" />
         </div>
 
         <div className="mt-5 flex items-center justify-between">
           <h2 className="font-display text-[15px] font-bold text-ink">
             {kind === "offer" ? "عقارات معروضة" : "طلبات بحث"}
           </h2>
-          <span className="text-[11px] font-semibold text-ink-faint">{listings.length} نتيجة</span>
+          <span className="text-[11px] font-semibold text-ink-faint">{isPending ? "…" : `${listings.length} نتيجة`}</span>
         </div>
 
         <div className="mt-3 space-y-3">
           {isPending ? (
             <p className="rounded-3xl glass-panel p-4 text-[12px] text-ink-soft">
               جارٍ تحميل النتائج…
+            </p>
+          ) : isError ? (
+            <p className="rounded-3xl glass-panel p-4 text-[12px] text-ink-soft">
+              تعذّر تحميل النتائج. حاول مرة أخرى لاحقًا.
             </p>
           ) : listings.length === 0 ? (
             <p className="rounded-3xl glass-panel p-4 text-[12px] text-ink-soft">
