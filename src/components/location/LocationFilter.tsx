@@ -9,6 +9,7 @@ import {
 type Props = {
   value: LocationSelection;
   onChange: (value: LocationSelection) => void;
+  title?: string;
   /** Optional call-to-action, unlocked once governorate + district are chosen. */
   actionLabel?: string;
   onAction?: () => void;
@@ -21,7 +22,7 @@ type Props = {
  * render a free-text field with a placeholder, and both paths satisfy the
  * validation rule that unlocks the action button.
  */
-export function LocationFilter({ value, onChange, actionLabel, onAction }: Props) {
+export function LocationFilter({ value, onChange, title = "الموقع", actionLabel, onAction }: Props) {
   const { data: governorates = [] } = useQuery(governoratesQuery);
   const { data: districts = [], isFetching } = useQuery(districtsQuery(value.governorateId));
 
@@ -32,7 +33,7 @@ export function LocationFilter({ value, onChange, actionLabel, onAction }: Props
   return (
     <section className="rounded-3xl glass-panel p-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-[15px] font-bold text-ink">الموقع</h2>
+        <h2 className="font-display text-[15px] font-bold text-ink">{title}</h2>
         <span className="text-[10px] font-medium text-ink-faint">المحافظة ← المدينة</span>
       </div>
 
