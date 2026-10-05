@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Turn the homepage location section into a live filter with an optional district, without changing the posting wizard
+- [x] Turn the homepage location section into a live filter with an optional district, without changing the posting wizard
 - [x] Add secure read-state support for messages
 - [x] Build centralized inbox and conversation replies
 - [x] Add inbox navigation and unread notification badge
