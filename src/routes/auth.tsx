@@ -38,6 +38,22 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+
+  const sendReset = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const parsed = z.string().trim().email("بريد إلكتروني غير صالح").safeParse(resetEmail || email);
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: window.location.origin + "/reset-password",
+    });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.");
+    setForgotOpen(false);
+  };
 
   const goNext = () => navigate({ to: next ?? "/" });
 
@@ -96,10 +112,26 @@ function AuthPage() {
           <form onSubmit={submit} className="mt-4 space-y-3">
             <input className={input} type="email" placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" />
             <input className={input} type="password" placeholder="كلمة المرور" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" />
+            {mode === "signin" && (
+              <button type="button" onClick={() => setForgotOpen((v) => !v)} className="block text-[12px] font-semibold text-brand">
+                نسيت كلمة المرور؟
+              </button>
+            )}
             <button disabled={busy} className="w-full rounded-xl bg-brand py-3.5 text-[14px] font-bold text-primary-foreground shadow-brand disabled:opacity-50">
               {mode === "signin" ? "دخول" : "إنشاء الحساب"}
             </button>
           </form>
+
+          {forgotOpen && mode === "signin" && (
+            <form onSubmit={sendReset} className="mt-4 space-y-3 rounded-2xl border border-glass-edge bg-glass p-4">
+              <p className="text-[12px] font-semibold text-ink">أدخل بريدك المسجّل وسنرسل لك رابط إعادة تعيين كلمة المرور.</p>
+              <input className={input} type="email" placeholder="البريد الإلكتروني" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} dir="ltr" />
+              <button disabled={busy} className="w-full rounded-xl bg-brand py-3 text-[13px] font-bold text-primary-foreground disabled:opacity-50">
+                إرسال رابط إعادة التعيين
+              </button>
+            </form>
+          )}
+
 
           <button
             type="button"
