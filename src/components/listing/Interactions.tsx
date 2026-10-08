@@ -22,9 +22,10 @@ export function StarRating({ listingId }: { listingId: string }) {
   const queryClient = useQueryClient();
   const { user } = useSession();
   const requireUser = useRequireSignIn(listingId);
-  const { data: ratings = [] } = useQuery(ratingsQuery(listingId));
-  const mine = ratings.find((r) => r.user_id === user?.id)?.stars ?? 0;
-  const average = ratings.length ? ratings.reduce((sum, r) => sum + r.stars, 0) / ratings.length : 0;
+  const { data } = useQuery(ratingsQuery(listingId, user?.id ?? null));
+  const mine = data?.mine ?? 0;
+  const average = data?.average ?? 0;
+  const ratingCount = data?.count ?? 0;
 
   const rate = useMutation({
     mutationFn: async (stars: number) => {
@@ -57,7 +58,7 @@ export function StarRating({ listingId }: { listingId: string }) {
         ))}
       </div>
       <p className="mt-1 text-[11px] font-medium text-ink-faint">
-        {ratings.length ? `${average.toFixed(1)} من 5 · ${ratings.length} تقييم` : "لا توجد تقييمات بعد"}
+        {ratingCount ? `${average.toFixed(1)} من 5 · ${ratingCount} تقييم` : "لا توجد تقييمات بعد"}
         {mine ? ` · تقييمك ${mine}` : ""}
       </p>
     </div>
@@ -69,8 +70,8 @@ export function LikeButton({ listingId }: { listingId: string }) {
   const queryClient = useQueryClient();
   const { user } = useSession();
   const requireUser = useRequireSignIn(listingId);
-  const { data: likes = [] } = useQuery(likesQuery(listingId));
-  const liked = Boolean(user && likes.some((l) => l.user_id === user.id));
+  const { data: likes } = useQuery(likesQuery(listingId, user?.id ?? null));
+  const liked = Boolean(user && likes?.liked);
 
   const toggle = useMutation({
     mutationFn: async () => {
@@ -96,7 +97,7 @@ export function LikeButton({ listingId }: { listingId: string }) {
       }`}
     >
       <span>{liked ? "❤️" : "👍"}</span>
-      <span>{likes.length}</span>
+      <span>{likes?.count ?? 0}</span>
     </button>
   );
 }

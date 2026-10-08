@@ -395,6 +395,14 @@ export type Database = {
         Returns: boolean
       }
       is_banned: { Args: { _user_id: string }; Returns: boolean }
+      listing_like_count: { Args: { _listing_id: string }; Returns: number }
+      listing_rating_stats: {
+        Args: { _listing_id: string }
+        Returns: {
+          avg_stars: number
+          rating_count: number
+        }[]
+      }
     }
     Enums: {
       account_type: "individual" | "agency"
