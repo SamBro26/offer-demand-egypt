@@ -2,29 +2,38 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const ratingsQuery = (listingId: string) =>
+/** Aggregate rating stats plus the caller's own stars (others' ratings stay private). */
+export const ratingsQuery = (listingId: string, userId: string | null = null) =>
   queryOptions({
-    queryKey: ["ratings", listingId],
+    queryKey: ["ratings", listingId, userId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("listing_ratings")
-        .select("user_id, stars")
-        .eq("listing_id", listingId);
+      const { data, error } = await supabase.rpc("listing_rating_stats", { _listing_id: listingId });
       if (error) throw error;
-      return data ?? [];
+      const row = data?.[0];
+      let mine = 0;
+      if (userId) {
+        const { data: own } = await supabase
+          .from("listing_ratings").select("stars").eq("listing_id", listingId).eq("user_id", userId).maybeSingle();
+        mine = own?.stars ?? 0;
+      }
+      return { average: Number(row?.avg_stars ?? 0), count: row?.rating_count ?? 0, mine };
     },
   });
 
-export const likesQuery = (listingId: string) =>
+/** Like count plus whether the caller liked it (likers stay private). */
+export const likesQuery = (listingId: string, userId: string | null = null) =>
   queryOptions({
-    queryKey: ["likes", listingId],
+    queryKey: ["likes", listingId, userId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("listing_likes")
-        .select("user_id")
-        .eq("listing_id", listingId);
+      const { data, error } = await supabase.rpc("listing_like_count", { _listing_id: listingId });
       if (error) throw error;
-      return data ?? [];
+      let liked = false;
+      if (userId) {
+        const { data: own } = await supabase
+          .from("listing_likes").select("user_id").eq("listing_id", listingId).eq("user_id", userId).maybeSingle();
+        liked = Boolean(own);
+      }
+      return { count: data ?? 0, liked };
     },
   });
 
