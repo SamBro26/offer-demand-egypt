@@ -43,6 +43,13 @@
       "when": 1791055377425,
       "tag": "0005_seed_all_egypt_districts",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791446999317,
+      "tag": "0006_restrict_public_reads",
+      "breakpoints": true
     }
   ]
 }
