@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { fallbackImage } from "@/components/market/ListingCard";
 import { adminReportsQuery, adminUsersQuery, supportMessagesQuery, type AdminReport, type AdminUser } from "@/lib/moderation";
 import { getAdminStatus } from "@/lib/moderation.functions";
+import { useSession } from "@/lib/auth";
+import { accountTypeLabels } from "@/lib/account";
 import { photoUrlsQuery, propertyTypeLabels } from "@/lib/listings";
 
 export const Route = createFileRoute("/_authenticated/admin")({
