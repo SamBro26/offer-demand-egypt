@@ -140,17 +140,18 @@ const userInput = z.object({ userId: z.string().uuid() });
 
 export const sendBroadcastNotification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ body: z.string().trim().min(1).max(1000) }).parse(input))
+  .inputValidator((input) =>
+    z.object({ body: z.string().trim().min(1).max(1000), recipientId: z.string().uuid().nullable().optional() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    if (usersError) throw usersError;
-    const rows = usersData.users.map((u) => ({ body: data.body, created_by: context.userId, recipient_id: u.id }));
-    if (rows.length === 0) return { sent: 0 };
-    const { error } = await supabaseAdmin.from("system_notifications").insert(rows);
+    // recipient_id NULL = broadcast to everyone; otherwise one targeted alert.
+    const { error } = await supabaseAdmin
+      .from("system_notifications")
+      .insert({ body: data.body, created_by: context.userId, recipient_id: data.recipientId ?? null });
     if (error) throw error;
-    return { sent: rows.length };
+    return { sent: 1 };
   });
 
 export const listAdminUsers = createServerFn({ method: "GET" })

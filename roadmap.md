@@ -10,4 +10,4 @@
 - [x] Add secure listing reports and admin moderation tools
 - [x] Add the protected admin dashboard and in-place listing controls
 - [ ] Verify admin moderation end-to-end — blocked until an admin account exists
-- [ ] Admin alerts: broadcast or specific user
+- [x] Admin alerts: broadcast or specific user
