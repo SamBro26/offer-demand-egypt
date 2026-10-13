@@ -10,10 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/lib/auth";
-import { accountTypeLabels } from "@/lib/account";
-import { adminDeleteUser, adminSetUserBan } from "@/lib/moderation.functions";
+import { adminDeleteUser, adminSetUserBan, sendBroadcastNotification } from "@/lib/moderation.functions";
 
 import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
