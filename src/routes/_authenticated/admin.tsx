@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { adminDeleteUser, adminSetUserBan, sendBroadcastNotification } from "@/lib/moderation.functions";
 
 import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
