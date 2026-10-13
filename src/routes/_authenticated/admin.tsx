@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { adminDeleteUser, adminSetUserBan, sendBroadcastNotification } from "@/lib/moderation.functions";
 
 import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
@@ -141,18 +142,56 @@ function UsersTab() {
 
 function NotifyTab() {
   const { user } = useSession();
+  const { data: users = [] } = useQuery(adminUsersQuery);
   const [body, setBody] = useState("");
+  const [mode, setMode] = useState<"all" | "one">("all");
+  const [recipientId, setRecipientId] = useState("");
+  const [search, setSearch] = useState("");
+  const filtered = users.filter((u) =>
+    `${u.name ?? ""} ${u.email ?? ""}`.toLowerCase().includes(search.trim().toLowerCase()),
+  );
   const send = useMutation({
-    mutationFn: () => sendBroadcastNotification({ data: { body: body.trim() } }),
-    onSuccess: () => { toast.success("تم إرسال التنبيه لجميع المستخدمين"); setBody(""); },
+    mutationFn: () =>
+      sendBroadcastNotification({ data: { body: body.trim(), recipientId: mode === "one" ? recipientId : null } }),
+    onSuccess: () => {
+      toast.success(mode === "all" ? "تم إرسال التنبيه لجميع المستخدمين" : "تم إرسال التحذير للمستخدم");
+      setBody("");
+    },
     onError: () => toast.error("تعذّر إرسال التنبيه"),
   });
+  const canSend = !!body.trim() && !send.isPending && !!user && (mode === "all" || !!recipientId);
   return (
     <section className="mt-3 rounded-2xl glass-panel p-4">
-      <h2 className="font-display text-[16px] font-bold text-ink">تنبيه لجميع المستخدمين</h2>
-      <p className="mt-1 text-[11px] text-ink-soft">يظهر التنبيه لكل مستخدم مسجّل عند فتح التطبيق.</p>
+      <h2 className="font-display text-[16px] font-bold text-ink">إرسال التنبيهات</h2>
+      <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-mist p-1">
+        {([["all", "إرسال للجميع"], ["one", "تحذير مستخدم محدد"]] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setMode(value)}
+            className={`rounded-lg py-2 text-[12px] font-bold ${mode === value ? "bg-background text-brand shadow-sm" : "text-ink-soft"}`}
+          >{label}</button>
+        ))}
+      </div>
+      {mode === "one" ? (
+        <div className="mt-3 space-y-2">
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="ابحث بالاسم أو البريد…" />
+          <select
+            value={recipientId}
+            onChange={(e) => setRecipientId(e.target.value)}
+            className="h-10 w-full rounded-md border border-input bg-background px-3 text-[13px] text-ink"
+          >
+            <option value="">اختر المستخدم</option>
+            {filtered.map((u) => (
+              <option key={u.id} value={u.id}>{(u.name || "بدون اسم") + " — " + (u.email ?? "")}</option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <p className="mt-2 text-[11px] text-ink-soft">يظهر التنبيه لكل مستخدم مسجّل عند فتح التطبيق.</p>
+      )}
       <Textarea value={body} maxLength={1000} onChange={(e) => setBody(e.target.value)} placeholder="اكتب نص التنبيه…" className="mt-3 min-h-28" />
-      <Button className="mt-3" disabled={!body.trim() || send.isPending || !user} onClick={() => send.mutate()}>
+      <Button className="mt-3" disabled={!canSend} onClick={() => send.mutate()}>
         <Send /> {send.isPending ? "جارٍ الإرسال…" : "إرسال"}
       </Button>
     </section>
