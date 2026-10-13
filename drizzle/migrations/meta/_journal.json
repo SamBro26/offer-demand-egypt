@@ -64,6 +64,13 @@
       "when": 1791909794149,
       "tag": "0008_per_user_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791909869325,
+      "tag": "0009_notifications_broadcast_or_targeted",
+      "breakpoints": true
     }
   ]
 }
