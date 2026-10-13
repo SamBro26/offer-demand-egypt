@@ -144,10 +144,7 @@ function NotifyTab() {
   const { user } = useSession();
   const [body, setBody] = useState("");
   const send = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("system_notifications").insert({ body: body.trim(), created_by: user!.id });
-      if (error) throw error;
-    },
+    mutationFn: () => sendBroadcastNotification({ data: { body: body.trim() } }),
     onSuccess: () => { toast.success("تم إرسال التنبيه لجميع المستخدمين"); setBody(""); },
     onError: () => toast.error("تعذّر إرسال التنبيه"),
   });
