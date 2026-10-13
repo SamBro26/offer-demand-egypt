@@ -57,6 +57,13 @@
       "when": 1791908558391,
       "tag": "0007_admin_notifications_support",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791909794149,
+      "tag": "0008_per_user_notifications",
+      "breakpoints": true
     }
   ]
 }

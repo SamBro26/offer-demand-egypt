@@ -360,18 +360,21 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          recipient_id: string | null
         }
         Insert: {
           body: string
           created_at?: string
           created_by: string
           id?: string
+          recipient_id?: string | null
         }
         Update: {
           body?: string
           created_at?: string
           created_by?: string
           id?: string
+          recipient_id?: string | null
         }
         Relationships: []
       }
