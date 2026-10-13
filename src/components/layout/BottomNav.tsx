@@ -18,19 +18,20 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 px-4 pb-4">
-      <div className="grid grid-cols-4 gap-1 rounded-3xl glass-panel-strong p-1.5">
-        <Link to="/" activeOptions={{ exact: true }} className={itemClass} activeProps={{ className: `${itemClass} ${activeClass}` }}>
-          <Home aria-hidden="true" className="size-4" />
-          <span className="text-[9px] font-bold">الرئيسية</span>
-        </Link>
+      <div className="grid grid-cols-4 items-end gap-1 rounded-3xl glass-panel-strong p-1.5">
         <Link
           to="/post"
           onClick={(e) => { if (!gatePost()) e.preventDefault(); }}
-          className={itemClass}
-          activeProps={{ className: `${itemClass} ${activeClass}` }}
+          className="group relative -mt-8 flex flex-col items-center gap-1"
         >
-          <Plus aria-hidden="true" className="size-4" />
-          <span className="text-[9px] font-semibold">نشر</span>
+          <span className="flex size-13 items-center justify-center rounded-2xl bg-gradient-to-b from-brand to-brand-deep text-primary-foreground shadow-brand ring-2 ring-background transition-transform group-active:scale-95">
+            <Plus aria-hidden="true" className="size-6" strokeWidth={2.5} />
+          </span>
+          <span className="text-[8px] font-extrabold text-brand-deep">أضف إعلانك هنا</span>
+        </Link>
+        <Link to="/" activeOptions={{ exact: true }} className={itemClass} activeProps={{ className: `${itemClass} ${activeClass}` }}>
+          <Home aria-hidden="true" className="size-4" />
+          <span className="text-[9px] font-bold">الرئيسية</span>
         </Link>
         <Link
           to="/inbox"
