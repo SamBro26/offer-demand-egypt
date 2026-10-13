@@ -330,6 +330,51 @@ export type Database = {
         }
         Relationships: []
       }
+      support_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          sender_email: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          sender_email?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          sender_email?: string | null
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      system_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string
+          id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by: string
+          id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_bans: {
         Row: {
           banned_by: string
