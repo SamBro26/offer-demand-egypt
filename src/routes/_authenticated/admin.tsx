@@ -10,10 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/lib/auth";
-import { accountTypeLabels } from "@/lib/account";
-import { adminDeleteUser, adminSetUserBan } from "@/lib/moderation.functions";
+import { adminDeleteUser, adminSetUserBan, sendBroadcastNotification } from "@/lib/moderation.functions";
 
 import { AdminActionButtons } from "@/components/admin/AdminActionButtons";
 import { AmbientBackground } from "@/components/layout/AmbientBackground";
@@ -21,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { fallbackImage } from "@/components/market/ListingCard";
 import { adminReportsQuery, adminUsersQuery, supportMessagesQuery, type AdminReport, type AdminUser } from "@/lib/moderation";
 import { getAdminStatus } from "@/lib/moderation.functions";
+import { useSession } from "@/lib/auth";
+import { accountTypeLabels } from "@/lib/account";
 import { photoUrlsQuery, propertyTypeLabels } from "@/lib/listings";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -144,10 +143,7 @@ function NotifyTab() {
   const { user } = useSession();
   const [body, setBody] = useState("");
   const send = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("system_notifications").insert({ body: body.trim(), created_by: user!.id });
-      if (error) throw error;
-    },
+    mutationFn: () => sendBroadcastNotification({ data: { body: body.trim() } }),
     onSuccess: () => { toast.success("تم إرسال التنبيه لجميع المستخدمين"); setBody(""); },
     onError: () => toast.error("تعذّر إرسال التنبيه"),
   });
