@@ -136,3 +136,77 @@ export const adminBanListingOwner = createServerFn({ method: "POST" })
 
     return { banned: true };
   });
+const userInput = z.object({ userId: z.string().uuid() });
+
+export const listAdminUsers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (error) throw error;
+    const ids = data.users.map((u) => u.id);
+    const [{ data: profiles }, { data: roles }, { data: bans }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("id, full_name, account_type, agency_name").in("id", ids),
+      supabaseAdmin.from("user_roles").select("user_id, role").eq("role", "admin"),
+      supabaseAdmin.from("user_bans").select("user_id").is("lifted_at", null),
+    ]);
+    const banned = new Set((bans ?? []).map((b) => b.user_id));
+    const admins = new Set((roles ?? []).map((r) => r.user_id));
+    return data.users.map((u) => {
+      const p = profiles?.find((x) => x.id === u.id);
+      return {
+        id: u.id,
+        email: u.email ?? "",
+        name: p?.agency_name || p?.full_name || "",
+        accountType: (p?.account_type ?? "individual") as "individual" | "agency",
+        isAdmin: admins.has(u.id),
+        banned: banned.has(u.id),
+        createdAt: u.created_at,
+      };
+    });
+  });
+
+export const adminSetUserBan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => userInput.extend({ banned: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    if (data.userId === context.userId) throw new Error("Admins cannot ban themselves");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      ban_duration: data.banned ? "876000h" : "none",
+    });
+    if (error) throw error;
+    if (data.banned) {
+      const { error: logError } = await supabaseAdmin.from("user_bans").insert({ user_id: data.userId, banned_by: context.userId });
+      if (logError && logError.code !== "23505") throw logError;
+      await supabaseAdmin.from("listings").update({ status: "archived" }).eq("owner_id", data.userId).eq("status", "published");
+    } else {
+      await supabaseAdmin.from("user_bans").update({ lifted_at: new Date().toISOString(), lifted_by: context.userId })
+        .eq("user_id", data.userId).is("lifted_at", null);
+    }
+    return { ok: true };
+  });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => userInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    if (data.userId === context.userId) throw new Error("Admins cannot delete themselves");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = data.userId;
+    const { data: files } = await supabaseAdmin.storage.from("listing-photos").list(userId, { limit: 1000 });
+    if (files?.length) await supabaseAdmin.storage.from("listing-photos").remove(files.map((f) => `${userId}/${f.name}`));
+    await supabaseAdmin.from("messages").delete().or(`sender_id.eq.${userId},recipient_id.eq.${userId}`);
+    const { data: owned } = await supabaseAdmin.from("listings").select("id").eq("owner_id", userId);
+    const ownedIds = (owned ?? []).map((l) => l.id);
+    if (ownedIds.length) {
+      await supabaseAdmin.from("messages").delete().in("listing_id", ownedIds);
+      await supabaseAdmin.from("listings").delete().in("id", ownedIds);
+    }
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (error) throw error;
+    return { ok: true };
+  });

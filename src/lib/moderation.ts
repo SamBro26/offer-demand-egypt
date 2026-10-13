@@ -16,3 +16,6 @@ export const adminReportsQuery = queryOptions({
 });
 
 export type AdminReport = Awaited<ReturnType<typeof listAdminReports>>[number];
+import { listAdminUsers } from "@/lib/moderation.functions";
+export const adminUsersQuery = queryOptions({ queryKey: ["admin-users"], queryFn: () => listAdminUsers() });
+export type AdminUser = Awaited<ReturnType<typeof listAdminUsers>>[number];
