@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LayoutDashboard } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { adminStatusQuery } from "@/lib/moderation";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
@@ -48,6 +51,18 @@ function AccountPage() {
   const removeAccount = useServerFn(deleteMyAccount);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const { data: adminStatus } = useQuery(adminStatusQuery(Boolean(user)));
+  const [support, setSupport] = useState("");
+  const sendSupport = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("support_messages").insert({
+        sender_id: user!.id, sender_email: user!.email ?? null, body: support.trim(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("تم إرسال رسالتك للإدارة"); setSupport(""); },
+    onError: () => toast.error("تعذّر إرسال الرسالة"),
+  });
 
   const signOut = async () => {
     await queryClient.cancelQueries();
@@ -93,6 +108,27 @@ function AccountPage() {
         </section>
 
         {loading ? null : user ? (
+          <>
+          {adminStatus?.isAdmin ? (
+            <Link
+              to="/admin"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3.5 text-[14px] font-bold text-primary-foreground shadow-brand"
+            >
+              <LayoutDashboard className="size-4" /> لوحة التحكم
+            </Link>
+          ) : null}
+          <section className="mt-4 rounded-3xl glass-panel p-4">
+            <h2 className="font-display text-[15px] font-bold text-ink">تواصل مع الإدارة</h2>
+            <Textarea value={support} maxLength={2000} onChange={(e) => setSupport(e.target.value)} placeholder="اكتب استفسارك أو شكواك…" className="mt-2 min-h-20" />
+            <button
+              type="button"
+              disabled={!support.trim() || sendSupport.isPending}
+              onClick={() => sendSupport.mutate()}
+              className="mt-2 w-full rounded-xl bg-glass-strong py-3 text-[13px] font-bold text-ink outline-1 outline-glass-edge disabled:opacity-50"
+            >
+              {sendSupport.isPending ? "جارٍ الإرسال…" : "إرسال"}
+            </button>
+          </section>
           <section className="mt-4 space-y-2.5 rounded-3xl glass-panel p-4">
             <button
               type="button"
@@ -109,6 +145,7 @@ function AccountPage() {
               إلغاء الحساب
             </button>
           </section>
+          </>
         ) : (
           <Link
             to="/auth"
