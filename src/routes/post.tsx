@@ -20,7 +20,7 @@ import {
   type TransactionType,
   type WizardPropertyType,
 } from "@/lib/listings";
-import { emptyLocation, isLocationComplete, type LocationSelection } from "@/lib/locations";
+import { emptyLocation, type LocationSelection } from "@/lib/locations";
 import { useAccountType } from "@/lib/use-account-type";
 
 type PostSearch = { gov?: string | undefined; district?: string | undefined; label?: string | undefined };
@@ -118,7 +118,7 @@ function PostPage() {
   };
 
   const submit = async () => {
-    if (!user || !propertyType || !transaction || !isLocationComplete(location)) return;
+    if (!user || !propertyType || !transaction || !location.governorateId) return;
     const parsed = detailsSchema.safeParse({ price: price ? Number(price) : null, description, phone });
     if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
     if (photosRequired && photos.length === 0) { toast.error("أضِف صورة واحدة على الأقل للعقار المعروض"); return; }
