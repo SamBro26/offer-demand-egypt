@@ -134,7 +134,8 @@ function PostPage() {
         paths.push(path);
       }
       const typeLabel = propertyTypeLabels[propertyType];
-      const title = kind === "offer" ? `${typeLabel} لل${transactionTypeLabels[transaction]}` : `مطلوب ${typeLabel} لل${transactionTypeLabels[transaction]}`;
+      const transLabel = transactionLabels[kind][transaction];
+      const title = kind === "offer" ? `${typeLabel} لل${transLabel}` : `مطلوب ${typeLabel} لل${transLabel}`;
       const { data, error } = await supabase
         .from("listings")
         .insert({
