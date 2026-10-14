@@ -3,15 +3,19 @@ import type { ListingKind } from "@/lib/listings";
 type Props = {
   value: ListingKind;
   onChange: (value: ListingKind) => void;
+  /** Optional per-context labels (e.g. the posting wizard uses shorter ones). */
+  labels?: { offer: string; request: string };
 };
 
-const tabs: { value: ListingKind; label: string }[] = [
-  { value: "offer", label: "العقارات المعروضة" },
-  { value: "request", label: "طلبات البحث" },
-];
+const defaultLabels = { offer: "العقارات المعروضة", request: "طلبات البحث" };
 
 /** Dual-market switch: supply (العرض) vs demand (الطلب). */
-export function MarketTabs({ value, onChange }: Props) {
+export function MarketTabs({ value, onChange, labels = defaultLabels }: Props) {
+  const tabs: { value: ListingKind; label: string }[] = [
+    { value: "offer", label: labels.offer },
+    { value: "request", label: labels.request },
+  ];
+
   return (
     <div role="tablist" className="grid grid-cols-2 gap-1.5 rounded-2xl bg-mist/70 p-1.5">
       {tabs.map((tab) => (

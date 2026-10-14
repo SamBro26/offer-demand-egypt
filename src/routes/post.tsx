@@ -20,7 +20,7 @@ import {
   type TransactionType,
   type WizardPropertyType,
 } from "@/lib/listings";
-import { emptyLocation, isLocationComplete, type LocationSelection } from "@/lib/locations";
+import { emptyLocation, type LocationSelection } from "@/lib/locations";
 import { useAccountType } from "@/lib/use-account-type";
 
 type PostSearch = { gov?: string | undefined; district?: string | undefined; label?: string | undefined };
@@ -53,6 +53,12 @@ const detailsSchema = z.object({
     .trim()
     .refine((v) => v === "" || /^(\+?20|0)?1[0125]\d{8}$/.test(v.replace(/[\s-]/g, "")), "رقم موبايل مصري غير صالح"),
 });
+
+/** Transaction labels per market: the demand flow reads "شراء" (buying) instead of "بيع". */
+const transactionLabels: Record<ListingKind, Record<TransactionType, string>> = {
+  offer: transactionTypeLabels,
+  request: { sale: "شراء", rent: "إيجار" },
+};
 
 const chip = (active: boolean) =>
   `rounded-xl py-3 text-[13px] transition-all ${
@@ -112,7 +118,7 @@ function PostPage() {
   };
 
   const submit = async () => {
-    if (!user || !propertyType || !transaction || !isLocationComplete(location)) return;
+    if (!user || !propertyType || !transaction || !location.governorateId) return;
     const parsed = detailsSchema.safeParse({ price: price ? Number(price) : null, description, phone });
     if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
     if (photosRequired && photos.length === 0) { toast.error("أضِف صورة واحدة على الأقل للعقار المعروض"); return; }
@@ -128,7 +134,8 @@ function PostPage() {
         paths.push(path);
       }
       const typeLabel = propertyTypeLabels[propertyType];
-      const title = kind === "offer" ? `${typeLabel} لل${transactionTypeLabels[transaction]}` : `مطلوب ${typeLabel} لل${transactionTypeLabels[transaction]}`;
+      const transLabel = transactionLabels[kind][transaction];
+      const title = kind === "offer" ? `${typeLabel} لل${transLabel}` : `مطلوب ${typeLabel} لل${transLabel}`;
       const { data, error } = await supabase
         .from("listings")
         .insert({
@@ -188,10 +195,20 @@ function PostPage() {
         {step === 1 ? (
           <>
             <div className="mt-4 rounded-3xl glass-panel p-4">
-              <MarketTabs value={kind} onChange={setKind} />
+              <MarketTabs
+                value={kind}
+                onChange={setKind}
+                labels={{ offer: "عرض عقار", request: "بحث عن عقار" }}
+              />
             </div>
             <div className="mt-4">
-              <LocationFilter value={location} onChange={setLocation} actionLabel="التالي" onAction={() => setStep(2)} />
+              <LocationFilter
+                value={location}
+                onChange={setLocation}
+                districtOptional
+                actionLabel="التالي"
+                onAction={() => setStep(2)}
+              />
             </div>
           </>
         ) : null}
@@ -210,7 +227,7 @@ function PostPage() {
             <div className="mt-3 grid grid-cols-2 gap-2">
               {(["sale", "rent"] as const).map((t) => (
                 <button key={t} type="button" onClick={() => setTransaction(t)} className={chip(transaction === t)}>
-                  {transactionTypeLabels[t]}
+                  {transactionLabels[kind][t]}
                 </button>
               ))}
             </div>
