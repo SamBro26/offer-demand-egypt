@@ -188,10 +188,20 @@ function PostPage() {
         {step === 1 ? (
           <>
             <div className="mt-4 rounded-3xl glass-panel p-4">
-              <MarketTabs value={kind} onChange={setKind} />
+              <MarketTabs
+                value={kind}
+                onChange={setKind}
+                labels={{ offer: "عرض عقار", request: "بحث عن عقار" }}
+              />
             </div>
             <div className="mt-4">
-              <LocationFilter value={location} onChange={setLocation} actionLabel="التالي" onAction={() => setStep(2)} />
+              <LocationFilter
+                value={location}
+                onChange={setLocation}
+                districtOptional
+                actionLabel="التالي"
+                onAction={() => setStep(2)}
+              />
             </div>
           </>
         ) : null}
@@ -210,7 +220,7 @@ function PostPage() {
             <div className="mt-3 grid grid-cols-2 gap-2">
               {(["sale", "rent"] as const).map((t) => (
                 <button key={t} type="button" onClick={() => setTransaction(t)} className={chip(transaction === t)}>
-                  {transactionTypeLabels[t]}
+                  {transactionLabels[kind][t]}
                 </button>
               ))}
             </div>
