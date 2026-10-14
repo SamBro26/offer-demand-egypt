@@ -54,6 +54,12 @@ const detailsSchema = z.object({
     .refine((v) => v === "" || /^(\+?20|0)?1[0125]\d{8}$/.test(v.replace(/[\s-]/g, "")), "رقم موبايل مصري غير صالح"),
 });
 
+/** Transaction labels per market: the demand flow reads "شراء" (buying) instead of "بيع". */
+const transactionLabels: Record<ListingKind, Record<TransactionType, string>> = {
+  offer: transactionTypeLabels,
+  request: { sale: "شراء", rent: "إيجار" },
+};
+
 const chip = (active: boolean) =>
   `rounded-xl py-3 text-[13px] transition-all ${
     active ? "bg-brand font-bold text-primary-foreground shadow-brand" : "bg-glass-strong font-semibold text-ink-soft outline-1 outline-glass-edge"
