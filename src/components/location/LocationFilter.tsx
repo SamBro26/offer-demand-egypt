@@ -24,13 +24,20 @@ type Props = {
  * render a free-text field with a placeholder, and both paths satisfy the
  * validation rule that unlocks the action button.
  */
-export function LocationFilter({ value, onChange, title = "الموقع", actionLabel, onAction }: Props) {
+export function LocationFilter({
+  value,
+  onChange,
+  title = "الموقع",
+  actionLabel,
+  onAction,
+  districtOptional = false,
+}: Props) {
   const { data: governorates = [] } = useQuery(governoratesQuery);
   const { data: districts = [], isFetching } = useQuery(districtsQuery(value.governorateId));
 
   const hasGovernorate = Boolean(value.governorateId);
   const hasDistrictList = districts.length > 0;
-  const unlocked = isLocationComplete(value);
+  const unlocked = districtOptional ? hasGovernorate : isLocationComplete(value);
 
   return (
     <section className="rounded-3xl glass-panel p-4">

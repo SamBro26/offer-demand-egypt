@@ -15,6 +15,8 @@ export function MarketTabs({ value, onChange, labels = defaultLabels }: Props) {
     { value: "offer", label: labels.offer },
     { value: "request", label: labels.request },
   ];
+
+  return (
     <div role="tablist" className="grid grid-cols-2 gap-1.5 rounded-2xl bg-mist/70 p-1.5">
       {tabs.map((tab) => (
         <button
