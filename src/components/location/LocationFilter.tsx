@@ -13,6 +13,8 @@ type Props = {
   /** Optional call-to-action, unlocked once governorate + district are chosen. */
   actionLabel?: string;
   onAction?: () => void;
+  /** When true the action unlocks with the governorate alone; district is fully optional. */
+  districtOptional?: boolean;
 };
 
 /**
