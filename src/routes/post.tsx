@@ -205,7 +205,9 @@ function PostPage() {
               <LocationFilter
                 value={location}
                 onChange={setLocation}
-                districtOptional
+                // Demand: governorate alone unlocks "التالي". Supply: a district
+                // (picked or typed) is also required before "التالي" unlocks.
+                districtOptional={kind === "request"}
                 actionLabel="التالي"
                 onAction={() => setStep(2)}
               />
