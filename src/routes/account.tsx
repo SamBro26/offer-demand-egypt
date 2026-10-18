@@ -97,6 +97,25 @@ function AccountPage() {
       <div className="relative mx-auto max-w-[430px] px-4 pb-32 pt-5">
         <AppHeader accountType={accountType} onAccountTypeChange={setAccountType} />
 
+        {!loading && user ? (
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={signOut}
+              className="flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-primary-foreground shadow-brand transition-colors"
+            >
+              <LogOut className="size-3.5" strokeWidth={2.5} /> تسجيل الخروج
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(true)}
+              className="flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1.5 text-[11px] font-semibold text-destructive-foreground shadow-brand transition-colors"
+            >
+              <Trash2 className="size-3.5" strokeWidth={2.5} /> حذف الحساب
+            </button>
+          </div>
+        ) : null}
+
         <section className="mt-5 rounded-3xl glass-panel p-4">
           <h1 className="font-display text-[18px] font-extrabold text-ink">حسابي</h1>
           <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">
