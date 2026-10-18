@@ -148,22 +148,6 @@ function AccountPage() {
               {sendSupport.isPending ? "جارٍ الإرسال…" : "إرسال"}
             </button>
           </section>
-          <section className="mt-4 space-y-2.5 rounded-3xl glass-panel p-4">
-            <button
-              type="button"
-              onClick={signOut}
-              className="w-full rounded-xl bg-glass-strong py-3.5 text-[14px] font-bold text-ink outline-1 outline-glass-edge"
-            >
-              تسجيل الخروج
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmOpen(true)}
-              className="w-full rounded-xl bg-destructive py-3.5 text-[14px] font-bold text-destructive-foreground"
-            >
-              إلغاء الحساب
-            </button>
-          </section>
           </>
         ) : (
           <Link
