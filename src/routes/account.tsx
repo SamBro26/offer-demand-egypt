@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, LogOut, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { adminStatusQuery } from "@/lib/moderation";
 import { useServerFn } from "@tanstack/react-start";
