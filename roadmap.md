@@ -14,4 +14,4 @@
 - [x] Move to external database project
 - [x] Rebuild database, locations, storage, email sign-in on external project
 - [ ] Google sign-in — needs provider enabled in the external project dashboard by the user
-- [ ] Re-create admin account (body05122@gmail.com) — user must sign up again
+- [x] Re-create admin account (body05122@gmail.com) and verify its admin role
