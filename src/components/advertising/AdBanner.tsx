@@ -1,5 +1,12 @@
-/** Fixed, globally shared placement for the native Google AdMob banner integration. */
+import { useEffect } from "react";
+import { startNativeBanner } from "@/lib/admob";
+
+/** Fixed, globally shared placement: the native AdMob adaptive banner renders over this reserved space in the app. */
 export function AdBanner() {
+  useEffect(() => {
+    startNativeBanner().catch((e) => console.error("AdMob banner failed", e));
+  }, []);
+
   return (
     <div className="fixed inset-x-0 top-0 z-50 h-15 border-b border-glass-edge bg-background/95 px-4 backdrop-blur-xl">
       <aside
