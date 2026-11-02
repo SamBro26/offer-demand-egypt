@@ -1,6 +1,6 @@
 /** Verified production AdMob identifiers for package `egypte.estate`. Env vars override; hardcoded fallbacks guarantee production builds initialize. */
-export const ADMOB_APP_ID = import.meta.env.VITE_ADMOB_APP_ID || "ca-app-pub-5516554712058767~6067447332";
-export const ADMOB_BANNER_ID = import.meta.env.VITE_ADMOB_BANNER_ID || "ca-app-pub-5516554712058767/4301658261";
+export const ADMOB_APP_ID = import.meta.env["VITE_ADMOB_APP_ID"] || "ca-app-pub-5516554712058767~6067447332";
+export const ADMOB_BANNER_ID = import.meta.env["VITE_ADMOB_BANNER_ID"] || "ca-app-pub-5516554712058767/4301658261";
 export const ANDROID_PACKAGE = "egypte.estate";
 
 let started = false;
