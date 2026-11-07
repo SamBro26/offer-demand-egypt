@@ -30,12 +30,23 @@ const schema = z.object({
   password: z.string().min(6, "كلمة المرور 6 أحرف على الأقل").max(72),
 });
 
+const signupSchema = schema.extend({
+  fullName: z.string().trim().min(2, "الاسم مطلوب").max(100),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^\+?[0-9\s-]{7,20}$/, "رقم هاتف غير صالح")
+    .max(20),
+});
+
 function AuthPage() {
   const { next } = Route.useSearch();
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -58,15 +69,25 @@ function AuthPage() {
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const parsed = schema.safeParse({ email, password });
+    const parsed =
+      mode === "signin"
+        ? schema.safeParse({ email, password })
+        : signupSchema.safeParse({ email, password, fullName, phone });
     if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
     setBusy(true);
     const { error } =
       mode === "signin"
-        ? await supabase.auth.signInWithPassword(parsed.data)
+        ? await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password })
         : await supabase.auth.signUp({
-            ...parsed.data,
-            options: { emailRedirectTo: window.location.origin },
+            email: parsed.data.email,
+            password: parsed.data.password,
+            options: {
+              emailRedirectTo: window.location.origin,
+              data: {
+                full_name: (parsed.data as z.infer<typeof signupSchema>).fullName,
+                phone: (parsed.data as z.infer<typeof signupSchema>).phone,
+              },
+            },
           });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
@@ -107,6 +128,12 @@ function AuthPage() {
           </button>
 
           <form onSubmit={submit} className="mt-4 space-y-3">
+            {mode === "signup" && (
+              <>
+                <input className={input} type="text" placeholder="الاسم" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                <input className={input} type="tel" inputMode="tel" placeholder="رقم الهاتف" value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" required />
+              </>
+            )}
             <input className={input} type="email" placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" />
             <input className={input} type="password" placeholder="كلمة المرور" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" />
             {mode === "signin" && (
